@@ -1,0 +1,13 @@
+[[source]]
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = 'Jedi-Temple'
+
+[packages]
+tensorflow = "*"
+keras = "*"
+sklearn = "*"
+pandas = "*"
+
+[requires]
+python_version = "3.7.4"
