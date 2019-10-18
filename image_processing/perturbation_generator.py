@@ -1,7 +1,7 @@
 import numpy as np
 
 class GrayscalePerturbator:
-    def __init__(self, image, sample_image=True, grid_dimen=2, stride=2, scale_factor=2):
+    def __init__(self, image, sample_image=True, grid_dimen=2, stride=2, scale_factor=2, stride_scale=1, cutoff_dimen=None):
         try: 
             self.original = np.array(image, copy=True, dtype="float32")
         except:
@@ -26,11 +26,14 @@ class GrayscalePerturbator:
             self.mean = 122.5
             self.variance = 30
 
+        self.maskedIndices = []
         self.maskPosition = (0, 0)
         self.done = False
         self.grid_dimen = grid_dimen
         self.stride = stride
         self.scale_factor = scale_factor
+        self.cutoff_dimen = cutoff_dimen
+        self.stride_scale = stride_scale
 
     # returns a copy to avoid clients breaking internal logic
     # could return a reference while storing memory of pre-perturbed grid,
@@ -57,10 +60,16 @@ class GrayscalePerturbator:
     def applyPerturbation(self, perturbation):
         mask = np.random.normal(loc=self.mean, scale=self.variance, size=(self.grid_dimen, self.grid_dimen))
 
+        maskedIndices = []
         posX, posY = self.maskPosition
         for r, row in enumerate(mask):
             for c, col in enumerate(mask):
                 perturbation[posY + r][posX + c] = mask[r][c] 
+                maskedIndices.append((posY + r, posX + c))
+
+
+        #for retrieving indices of masked pixels after calling nextPerturbation
+        self.maskedIndices = maskedIndices 
 
         return perturbation
 
@@ -75,10 +84,14 @@ class GrayscalePerturbator:
         if xOver and yOver:
             self.maskPosition = (0, 0)
             self.grid_dimen *= self.scale_factor
-            self.stride *= self.scale_factor
+            self.stride *= self.stride_scale
 
-            if (self.grid_dimen > self.width / 2 or self.grid_dimen > self.height / 2):
-                self.done = True
+            if (self.cutoff_dimen):
+                if (self.grid_dimen > self.cutoff_dimen):
+                    self.done = True
+            else: 
+                if (self.grid_dimen > self.width / 2 or self.grid_dimen > self.height / 2):
+                    self.done = True
         elif xOver:
             self.maskPosition = (0, posY + stride)
         else:
