@@ -1,7 +1,7 @@
 import numpy as np
 
 class GrayscalePerturbator:
-    def __init__(self, image, sample_image=True, grid_dimen=2, stride=2, scale_factor=2, stride_scale=1, cutoff_dimen=None, is_adversarial=True):
+    def __init__(self, image, sample_image=True, grid_dimen=2, stride=2, scale_factor=2, stride_scale=1, cutoff_dimen=None, is_adversarial=False):
         try: 
             self.original = np.array(image, copy=True, dtype="float32")
         except:

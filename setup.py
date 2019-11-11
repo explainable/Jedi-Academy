@@ -11,5 +11,8 @@ setup(name='Jedi-Academy-Explainable',
       author_email='explainable@outlook.com',
       #liscense='MIT', # TODO: Fill this is when we decide on what Liscense
       packages=['image_processing'],
+      package_dir={'image_processing': 'image_processing'},
+      package_data={'image_processing': ['data/*.h5']},
+      include_package_data=True,
       zip_safe=False # Not sure if this should be true or false, false seemed safer
 )

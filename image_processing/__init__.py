@@ -1,1 +1,2 @@
 from .perturbation_generator import GrayscalePerturbator
+from .mnist_cnn import get_pretrained_mnist_cnn
