@@ -8,6 +8,8 @@ from keras import backend as K
 INPUT_SHAPE = (28, 28, 1)
 NUM_CLASSES = 10
 
+__dir__ = "/".join(__file__.rsplit('/')[:-1])
+
 # Returns a base CNN model for MNIST
 # UNCOMPILED
 def get_mnist_cnn_uncompiled():
@@ -37,8 +39,9 @@ def get_untrained_mnist_cnn():
 # Compiles and returns pre-trained model
 def get_pretrained_mnist_cnn():
     model = get_mnist_cnn_uncompiled()
-    model.load_weights('mnist.h5')
+    model.load_weights(__dir__ + '/data/mnist.h5')
     model.compile(loss=keras.losses.categorical_crossentropy,
                   optimizer=keras.optimizers.Adadelta(),
                   metrics=['accuracy'])
     return model
+

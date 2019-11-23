@@ -92,3 +92,15 @@ except Exception as e:
     print("Valid input threw exception for generator syntax: ")
     print(str(e))
 # End 2D Array Perturbation Tests #
+
+generator2d = GrayscalePerturbator([[1, 0, 1, 0], 
+                                        [0, 1, 0, 1],
+                                        [1, 0, 1, 0],
+                                        [0, 1, 0, 1]], 
+                                        grid_dimen=1, 
+                                        stride=1,
+                                        scale_factor=2,
+                                        cutoff_dimen=2,
+                                        is_adversarial=False)
+for pert in generator2d:
+    print(pert)
