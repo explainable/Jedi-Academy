@@ -1,8 +1,8 @@
 #Program to create classifiers and regressors on a variety of datasets:
 #(male/female) voice data, boston housing dataset, titanic dataset
 
-from models import *
-from deciViz import plotTree, convertDotData, convertTreeToParentChild, getNode
+from tabular.models import *
+from tabular.deciViz import plotTree, convertDotData, convertTreeToParentChild, getNode
 import sys
 import numpy as np
 

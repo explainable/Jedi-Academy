@@ -1,7 +1,7 @@
 #Program used to visualize decision trees. Outputs pngs
 
 #import pydotplus
-import collections
+#import collections
 from sklearn.tree import DecisionTreeClassifier
 import numpy as np
 
