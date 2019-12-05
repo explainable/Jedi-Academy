@@ -39,15 +39,19 @@ def treeReg(features, labels, featNames, maxDepth, test_insts):
 def treeClassify(features, labels, featNames, maxDepth, test_insts):
     clf = tree.DecisionTreeClassifier(max_depth = maxDepth)
     clf = clf.fit(features, labels)
+    deciPath = clf.decision_path(test_insts).toarray()
     predLabels = clf.predict(test_insts)
 
+    return clf, predLabels, deciPath
+
+"""
     dot_data = tree.export_graphviz(clf,
                                     feature_names=featNames,
                                     out_file=None,
                                     filled=True,
                                     rounded=True)
+"""
 
-    return clf, dot_data, predLabels
 
 #Performs a logistic regression. Takes features (2D list), labels (1D list),
 #and a list of testing instances that will be used to run predictions on 
@@ -59,7 +63,7 @@ def linClassify(features, labels, test_insts):
     clf = LogisticRegression(random_state=0, solver='lbfgs',
             multi_class='multinomial').fit(features,labels)
     predLabels = clf.predict(test_insts)
-    return clf, clf.coef_, predLabels
+    return clf, clf.coef_, clf.intercept_, predLabels
 
 #Performs a linear regression. Takes features (2D list), labels (1D list),
 #and a list of testing instances that will be used to run predictions on 
@@ -71,4 +75,4 @@ def linRegress(features, labels, test_insts):
     clf = LinearRegression()
     clf.fit(features, labels)
     predLabels = clf.predict(test_insts)
-    return clf, clf.coef_, predLabels
+    return clf, clf.coef_, clf.intercept_, predLabels
