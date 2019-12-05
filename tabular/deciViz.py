@@ -115,13 +115,11 @@ def getNode(instance, clf, deciPath, featNames):
         currFeat = feature[currNode]
         currThresh = threshold[currNode]
         if instance[feature[currNode]] <= threshold[currNode]:
-            print("left" + str(children_left[currNode]))
             currNode = children_left[currNode]
             threshold_sign = "<="
             if is_leaves[currNode]:
                 break
         else:
-            print("right" + str(children_right[currNode]))
             currNode = children_right[currNode]
             threshold_sign = ">"
             if is_leaves[currNode]:
@@ -129,7 +127,7 @@ def getNode(instance, clf, deciPath, featNames):
 
     nodeVal = "%d: %s%s%f" % (currNode, featNames[currFeat],\
                               threshold_sign, currThresh)
-    print (nodeVal) 
+    return nodeVal
 
 
 #Takes a decision tree classifier, a list of feature names, a list of
@@ -171,7 +169,7 @@ def convertTreeToParentChild(clf, featNames, predLabels, deciPath):
                             nodeVals, deciPath, featNames, predLabels, ">")
             
     #print(parents)
-    print(labels)
+    #print(labels)
     #print(vals)
 
 #Add a the children of node i to the parents, vals, and labels lists. Takes the
@@ -226,7 +224,7 @@ def convertDotData(dot_data):
     for node in nodeSplit:
         nodes.append(node.split('\n')[1])
 
-    print(edges)
+    #print(edges)
     nodeInfo = {}
     for index, node in enumerate(nodes):
         if index != 0 and index != 1 and index != len(nodes) - 1:
@@ -237,4 +235,4 @@ def convertDotData(dot_data):
             label = twoParts[1]
             nodeInfo[str(num)] = str(label)
             
-    print(nodeInfo)
+    #print(nodeInfo)
