@@ -1,18 +1,19 @@
 #Program to create classifiers and regressors on a variety of datasets:
 #(male/female) voice data, boston housing dataset, titanic dataset
 
-from models import *
-from deciViz import plotTree, convertDotData, convertTreeToParentChild
+from .models import *
+##from .deciViz import plotTree, convertDotData, convertTreeToParentChild
 import sys
 import numpy as np
 
+__dir__ = "/".join(__file__.rsplit('/')[:-1])
 #Read in titanic.csv and return a 2D list of instances, 1D list of labels, and
 #1D list of feature names
 def readInTitanic():
     allInsts = []
     allLabels = []
     featNames = []
-    with open("titanic.csv") as titFile:
+    with open(__dir__ + "/data/titanic.csv") as titFile:
         for linenum, line in enumerate(titFile):
             features = line.split(",")
             currInst = []
@@ -97,7 +98,7 @@ def treeBoston(maxDepth=100):
     features, labels = load_boston(True)
     data_feature_names = boston.feature_names
     clf, dot_data, predLabels = treeReg(features, labels, data_feature_names, maxDepth, features)
-    convertDotData(dot_data)
+    #convertDotData(dot_data)
     return dot_data
 
 #Perform a linear regression on boston housing data
@@ -191,7 +192,7 @@ def testMain():
     features, labels, featNames = readInTitanic()
     titDepth = 5
     clf, featNames, predLabels, deciPath = treeTitanic(titDepth)
-    convertTreeToParentChild(clf, featNames, predLabels, deciPath)
+    #convertTreeToParentChild(clf, featNames, predLabels, deciPath)
     getNode(features[0], clf, deciPath, featNames)
 
     #plotTree(titData, "titanicClass.png")
@@ -203,4 +204,4 @@ def testMain():
     #params, intercept, labels = linTitanic()
     #print params, labels
 
-testMain()
+#testMain()

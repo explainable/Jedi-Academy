@@ -10,9 +10,9 @@ setup(  name='Jedi-Academy-Explainable',
         author='Explainable',
         author_email='explainable@outlook.com',
         #liscense='MIT', # TODO: Fill this is when we decide on what Liscense
-        packages=['image_processing'],
+        packages=['image_processing', 'tabular'],
         package_dir={'image_processing': 'image_processing'},
-        package_data={'image_processing': ['data/*.h5']},
+        package_data={'image_processing': ['data/*.h5'], 'tabular': ['data/*.csv']},
         include_package_data=True,
         install_requires=[
             'tensorflow',
