@@ -16,10 +16,18 @@ from sklearn import tree
 #        - dot_data, a string describing the nodes and edges of the tree, 
 #        - predLabels, the predicted labels of the test_insts
 def treeReg(features, labels, featNames, maxDepth, test_insts):
+    #clf = tree.DecisionTreeRegressor(max_depth = maxDepth)
+    #clf = clf.fit(features, labels)
+    #predLabels = clf.predict(test_insts)
+
     clf = tree.DecisionTreeRegressor(max_depth = maxDepth)
     clf = clf.fit(features, labels)
+    deciPath = clf.decision_path(test_insts).toarray()
     predLabels = clf.predict(test_insts)
 
+    return clf, predLabels, deciPath
+
+"""
     dot_data = tree.export_graphviz(clf,
                                 feature_names=featNames,
                                 out_file=None,
@@ -27,6 +35,7 @@ def treeReg(features, labels, featNames, maxDepth, test_insts):
                                 rounded=True)
 
     return clf, dot_data, predLabels
+"""
 
 #Perform a regression problem with a decision tree. Takes the features 
 #(2D list), labels (1D list), feature names (1D list), and the maximum depth 

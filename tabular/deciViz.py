@@ -1,6 +1,6 @@
 #Program used to visualize decision trees. Outputs pngs
 
-import pydotplus
+#import pydotplus
 import collections
 from sklearn.tree import DecisionTreeClassifier
 import numpy as np
@@ -29,29 +29,23 @@ def plotTree(dot_data, filename):
 
     graph.write_png(filename)
 
-def convertTreeToParentChild(clf, featNames, predLabels, deciPath):
+#Take a decision tree classifier and return the various components:
+# number of nodes, left children, right children, features, and thresholds
+def obtainTreeInfo(clf):
     n_nodes = clf.tree_.node_count
     children_left = clf.tree_.children_left
     children_right = clf.tree_.children_right
     feature = clf.tree_.feature
     threshold = clf.tree_.threshold
 
-    parents = [""]
-    labels = ["0: Everyone"]
+    return n_nodes, children_left, children_right, feature, threshold
 
-    numLive = 0
-    numDead = 0
-    for pred in predLabels:
-        if pred == 1:
-            numLive += 1
-        if pred == 0:
-            numDead += 1
-    initVal = "0: Dead = %d%%, Live = %d%%" % \
-                                (numDead * 100 / float(numDead + numLive), \
-                                (numLive * 100 / float(numDead + numLive)))
-    initVal = numLive / float(numDead + numLive)
-
-    vals = [initVal]
+#Take a decision tree classifier
+#
+#Return a list with each entry being a boolean that corresponds to whether that
+#node index is a leave node or not
+def obtainLeaves(clf):
+    n_nodes,children_left,children_right,feature,threshold = obtainTreeInfo(clf)
 
     node_depth = np.zeros(shape=n_nodes, dtype=np.int64)
     is_leaves = np.zeros(shape=n_nodes, dtype=bool)
@@ -67,58 +61,148 @@ def convertTreeToParentChild(clf, featNames, predLabels, deciPath):
         else:
             is_leaves[node_id] = True
 
+    return is_leaves
+
+"""
+#Take an instance of values, a decision tree classifer, a decision path matrix,
+#and a list of feature names
+#
+#Return the leaf that the instance will be computed to. This will be in the
+#form of, for example, Age<23
+def getNode(instance, clf, deciPath, featNames):
+    n_nodes,children_left,children_right,feature,threshold = obtainTreeInfo(clf)
+
+    instance = np.array(instance).reshape(1,-1)
+    node_indicator = clf.decision_path(instance)
+    sample_id = 0
+    node_index = node_indicator.indices[node_indicator.indptr[sample_id]:
+                                    node_indicator.indptr[sample_id + 1]]
+
+    leave_id = clf.apply(instance)
+
+    print(node_index)
+    
+
+    nodeVal = "-1"
+    for node_id in node_index:
+        if (instance[0][feature[node_id]] <= threshold[node_id]):
+            threshold_sign = "<="
+        else:
+            threshold_sign = ">"
+
+        nodeVal = "%d: %s%s%f" % (node_id, featNames[feature[node_id]],\
+                threshold_sign, threshold[node_id])
+        print(nodeVal)
+
+    return nodeVal
+
+"""
+
+def getNode(instance, clf, deciPath, featNames):
+    n_nodes,children_left,children_right,feature,threshold = obtainTreeInfo(clf)
+    
+    currNode = 0
+
+    threshold_sign = "-1"
+    currFeat = "-6"
+    currThresh = "-7"
+    i = 0
+
+    is_leaves = obtainLeaves(clf)
+
+    while i < 10:
+        i += 1
+        currFeat = feature[currNode]
+        currThresh = threshold[currNode]
+        if instance[feature[currNode]] <= threshold[currNode]:
+            print("left" + str(children_left[currNode]))
+            currNode = children_left[currNode]
+            threshold_sign = "<="
+            if is_leaves[currNode]:
+                break
+        else:
+            print("right" + str(children_right[currNode]))
+            currNode = children_right[currNode]
+            threshold_sign = ">"
+            if is_leaves[currNode]:
+                break
+
+    nodeVal = "%d: %s%s%f" % (currNode, featNames[currFeat],\
+                              threshold_sign, currThresh)
+    print (nodeVal) 
+
+
+#Takes a decision tree classifier, a list of feature names, a list of
+#predicition labels, and a decision_path object
+#
+#This function will take a classifier and parse it to obtain the various nodes
+#in the graph, as well as the various confidence scores, and feature split of
+#each of those nodes
+def convertTreeToParentChild(clf, featNames, predLabels, deciPath):
+    n_nodes,children_left,children_right,feature,threshold = obtainTreeInfo(clf)
+
+    parents = [""]
+    labels = ["0: Everyone"]
+
+    numLive = 0
+    numDead = 0
+    for pred in predLabels:
+        if pred == 1:
+            numLive += 1
+        if pred == 0:
+            numDead += 1
+    #initVal = "0: Dead = %d%%, Live = %d%%" % \
+    #                            (numDead * 100 / float(numDead + numLive), \
+    #                            (numLive * 100 / float(numDead + numLive)))
+    initVal = numLive / float(numDead + numLive)
+
+    vals = [initVal]
+
+    is_leaves = obtainLeaves(clf)
+
     leafId = 0
     nodeVals = {0: ""}
     for i in range(n_nodes):
         if not is_leaves[i]:
-            numLive = 0
-            numDead = 0
-            for index, pred in enumerate(predLabels):
-                if deciPath[index][children_left[i]] == 1:
-                    if pred == 1:
-                        numLive += 1
-                    else:
-                        numDead += 1
+            addChild(clf, i, children_left, parents, vals, labels, \
+                            nodeVals, deciPath, featNames, predLabels, "<=")
 
-            leftVal = "Dead = %d%%, Live = %d%%" % \
-                                (numDead * 100 / float(numDead + numLive), \
-                                (numLive * 100 / float(numDead + numLive)))
-            leftVal = numLive / float(numDead + numLive)
-            #leftVal = str(children_left[i]) + ": " + leftVal
-            leftLabel = featNames[feature[i]] + "<=" + str(threshold[i])
-            leftLabel = str(children_left[i]) + ": " + leftLabel
-            labels.append(leftLabel)
-            vals.append(leftVal)
-            nodeVals[children_left[i]] = leftLabel
-            parents.append(nodeVals[i])
+            addChild(clf, i, children_right, parents, vals, labels, \
+                            nodeVals, deciPath, featNames, predLabels, ">")
+            
+    #print(parents)
+    print(labels)
+    #print(vals)
+
+#Add a the children of node i to the parents, vals, and labels lists. Takes the
+#variables with corresponding names seen in convertTreeToParentChild
+def addChild(clf, i, children_list, parents, vals, labels, nodeVals, deciPath,\
+        featNames, predLabels, threshVal):
+    n_nodes,children_left,children_right,feature,threshold = obtainTreeInfo(clf)
+    numLive = 0
+    numDead = 0
+    for index, pred in enumerate(predLabels):
+        if deciPath[index][children_list[i]] == 1:
+            if pred == 1:
+                numLive += 1
+            else:
+                numDead += 1
+
+    #val = "Dead = %d%%, Live = %d%%" % \
+    #                    (numDead * 100 / float(numDead + numLive), \
+    #                    (numLive * 100 / float(numDead + numLive)))
+    val = numLive / float(numDead + numLive)
+    #val = str(children_left[i]) + ": " + val
+    label = featNames[feature[i]] + threshVal + str(threshold[i])
+    label = str(children_list[i]) + ": " + label
+    labels.append(label)
+    vals.append(val)
+    nodeVals[children_list[i]] = label
+    parents.append(nodeVals[i])
 
 
-            numLive = 0
-            numDead = 0
-            for index, pred in enumerate(predLabels):
-                if deciPath[index][children_right[i]] == 1:
-                    if pred == 1:
-                        numLive += 1
-                    else:
-                        numDead += 1
-            rightVal = "Dead = %d%%, Live = %d%%" % \
-                                (numDead * 100 / float(numDead + numLive), \
-                                (numLive * 100 / float(numDead + numLive)))
-            rightVal = numLive / float(numDead + numLive)
-            #rightVal = str(children_right[i]) + ": " + rightVal
-
-            rightLabel = featNames[feature[i]] + ">" + str(threshold[i])
-            rightLabel = str(children_right[i]) + ": " + rightLabel
-
-            vals.append(rightVal)
-            labels.append(rightLabel)
-            nodeVals[children_right[i]] = rightLabel
-            parents.append(nodeVals[i])
-
-    print parents
-    print labels
-    print vals
-
+#Takes a dot_data datatype and parse it to obtain the various nodes in the
+#corresponding decision tree
 def convertDotData(dot_data):
     graph = pydotplus.graph_from_dot_data(dot_data)
 
@@ -142,7 +226,7 @@ def convertDotData(dot_data):
     for node in nodeSplit:
         nodes.append(node.split('\n')[1])
 
-    print edges
+    print(edges)
     nodeInfo = {}
     for index, node in enumerate(nodes):
         if index != 0 and index != 1 and index != len(nodes) - 1:
@@ -153,4 +237,4 @@ def convertDotData(dot_data):
             label = twoParts[1]
             nodeInfo[str(num)] = str(label)
             
-    print nodeInfo
+    print(nodeInfo)

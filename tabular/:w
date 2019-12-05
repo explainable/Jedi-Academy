@@ -154,7 +154,7 @@ def testMain():
     titDepth = 5
     clf, featNames, predLabels, deciPath = treeTitanic(titDepth)
     convertTreeToParentChild(clf, featNames, predLabels, deciPath)
-    print(getNode([1, 0, 50, 0, 0, 152], clf, deciPath, featNames))
+    print(getNode([1, 0, ], clf, deciPath, featNames))
 
     #plotTree(titData, "titanicClass.png")
 
