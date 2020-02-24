@@ -1,7 +1,58 @@
 import pickle
+from sklearn.datasets import load_boston
+
+def readInTitanic():
+    allInsts = []
+    allLabels = []
+    featNames = []
+    with open("data/titanic.csv") as titFile:
+        for linenum, line in enumerate(titFile):
+            features = line.split(",")
+            currInst = []
+            for index, feat in enumerate(features):
+                if linenum == 0:
+                    if index != 0 and index != 2:
+                        featNames.append(feat.replace('\r', '').replace('\n',''))
+                else: 
+                    if index == 0:
+                        allLabels.append(int(feat))
+                    elif index != 2:
+                        if feat == "male":
+                            currInst.append(0.0)
+                        elif feat == "female":
+                            currInst.append(1.0)
+                        else:
+                            currInst.append(float(feat))
+            if linenum != 0:
+                allInsts.append(currInst)
+
+    return allInsts, allLabels, featNames
 
 def loadTitanicTree():
     loaded_clf = pickle.load(open("titanicTree.pkl", 'rb'))
     #print(loaded_clf.predict([[3, 1, 22, 1, 0, 7.25]]))
+    features, labels, featNames = readInTitanic()
+    deciPath = loaded_clf.decision_path(features).toarray()
+    predLabels = loaded_clf.predict(features)
+    print predLabels
+    
+    return loaded_clf, featNames, predLabels, deciPath
 
-#loadTitanicTree()
+def loadBostonTree():
+    loaded_clf = pickle.load(open("bostonTree.pkl", 'rb'))
+    #print(loaded_clf.predict([[3, 1, 22, 1, 0, 7.25]]))
+
+    boston = load_boston()
+    features, labels = load_boston(True)
+    data_feature_names = boston.feature_names
+
+    deciPath = loaded_clf.decision_path(features).toarray()
+    predLabels = loaded_clf.predict(features)
+    print predLabels
+    
+    return loaded_clf, data_feature_names, predLabels, deciPath
+
+
+
+loadTitanicTree()
+loadBostonTree()
