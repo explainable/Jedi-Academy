@@ -6,6 +6,7 @@ def readInTitanic():
     allLabels = []
     featNames = []
     with open(__dir__+"data/titanic.csv") as titFile:
+    #with open("data/titanic.csv") as titFile:
         for linenum, line in enumerate(titFile):
             features = line.split(",")
             currInst = []
