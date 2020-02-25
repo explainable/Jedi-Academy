@@ -5,7 +5,7 @@ def readInTitanic():
     allInsts = []
     allLabels = []
     featNames = []
-    with open("data/titanic.csv") as titFile:
+    with open(__dir__+"data/titanic.csv") as titFile:
         for linenum, line in enumerate(titFile):
             features = line.split(",")
             currInst = []
@@ -30,27 +30,21 @@ def readInTitanic():
 
 def loadTitanicTree():
     loaded_clf = pickle.load(open("titanicTree.pkl", 'rb'))
-    #print(loaded_clf.predict([[3, 1, 22, 1, 0, 7.25]]))
     features, labels, featNames = readInTitanic()
     deciPath = loaded_clf.decision_path(features).toarray()
-    predLabels = loaded_clf.predict(features)
-    print predLabels
     
-    return loaded_clf, featNames, predLabels, deciPath
+    return loaded_clf, featNames, deciPath
 
 def loadBostonTree():
     loaded_clf = pickle.load(open("bostonTree.pkl", 'rb'))
-    #print(loaded_clf.predict([[3, 1, 22, 1, 0, 7.25]]))
 
     boston = load_boston()
     features, labels = load_boston(True)
     data_feature_names = boston.feature_names
 
     deciPath = loaded_clf.decision_path(features).toarray()
-    predLabels = loaded_clf.predict(features)
-    print predLabels
     
-    return loaded_clf, data_feature_names, predLabels, deciPath
+    return loaded_clf, data_feature_names, deciPath
 
 
 
