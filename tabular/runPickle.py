@@ -1,12 +1,13 @@
 import pickle
 from sklearn.datasets import load_boston
 
+__dir__ = "/".join(__file__.rsplit('/')[:-1])
+
 def readInTitanic():
     allInsts = []
     allLabels = []
     featNames = []
-    with open(__dir__+"data/titanic.csv") as titFile:
-    #with open("data/titanic.csv") as titFile:
+    with open(__dir__ + "/data/titanic.csv") as titFile:
         for linenum, line in enumerate(titFile):
             features = line.split(",")
             currInst = []
@@ -30,14 +31,14 @@ def readInTitanic():
     return allInsts, allLabels, featNames
 
 def loadTitanicTree():
-    loaded_clf = pickle.load(open("titanicTree.pkl", 'rb'))
+    loaded_clf = pickle.load(open(__dir__ + "/data/titanicTree.pkl", 'rb'))
     features, labels, featNames = readInTitanic()
     deciPath = loaded_clf.decision_path(features).toarray()
     
     return loaded_clf, featNames, deciPath
 
 def loadBostonTree():
-    loaded_clf = pickle.load(open("bostonTree.pkl", 'rb'))
+    loaded_clf = pickle.load(open(__dir__ + "/data/bostonTree.pkl", 'rb'))
 
     boston = load_boston()
     features, labels = load_boston(True)
@@ -50,4 +51,4 @@ def loadBostonTree():
 
 
 loadTitanicTree()
-loadBostonTree()
+#loadBostonTree()
