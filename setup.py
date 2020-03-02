@@ -15,7 +15,7 @@ setup(  name='Jedi-Academy-Explainable',
         package_data={'image_processing': ['data/*.h5'], 'tabular': ['data/*']},
         include_package_data=True,
         install_requires=[
-            'tensorflow',
+            'Theano',
             'keras',
             'sklearn',
             'pandas',
