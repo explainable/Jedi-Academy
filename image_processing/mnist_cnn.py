@@ -44,4 +44,3 @@ def get_pretrained_mnist_cnn():
                   optimizer=keras.optimizers.Adadelta(),
                   metrics=['accuracy'])
     return model
-

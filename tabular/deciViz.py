@@ -45,7 +45,7 @@ def obtainTreeInfo(clf):
 #Return a list with each entry being a boolean that corresponds to whether that
 #node index is a leave node or not
 def obtainLeaves(clf):
-    n_nodes,children_left,children_right,feature,threshold = obtainTreeInfo(clf)
+    n_nodes, children_left, children_right, feature, threshold = obtainTreeInfo(clf)
 
     node_depth = np.zeros(shape=n_nodes, dtype=np.int64)
     is_leaves = np.zeros(shape=n_nodes, dtype=bool)
@@ -55,7 +55,7 @@ def obtainLeaves(clf):
         node_depth[node_id] = parent_depth + 1
 
         # If we have a test node
-        if (children_left[node_id] != children_right[node_id]):
+        if children_left[node_id] != children_right[node_id]:
             stack.append((children_left[node_id], parent_depth + 1))
             stack.append((children_right[node_id], parent_depth + 1))
         else:
@@ -70,9 +70,9 @@ def obtainLeaves(clf):
 #Return the leaf that the instance will be computed to. This will be in the
 #form of, for example, Age<23
 def getNode(instance, clf, deciPath, featNames):
-    n_nodes,children_left,children_right,feature,threshold = obtainTreeInfo(clf)
+    n_nodes,children_left, children_right, feature, threshold = obtainTreeInfo(clf)
 
-    instance = np.array(instance).reshape(1,-1)
+    instance = np.array(instance).reshape(1, -1)
     node_indicator = clf.decision_path(instance)
     sample_id = 0
     node_index = node_indicator.indices[node_indicator.indptr[sample_id]:
@@ -99,8 +99,8 @@ def getNode(instance, clf, deciPath, featNames):
 """
 
 def getNode(instance, clf, deciPath, featNames):
-    n_nodes,children_left,children_right,feature,threshold = obtainTreeInfo(clf)
-    
+    n_nodes, children_left, children_right, feature, threshold = obtainTreeInfo(clf)
+ 
     currNode = 0
 
     threshold_sign = "-1"
@@ -137,7 +137,7 @@ def getNode(instance, clf, deciPath, featNames):
 #in the graph, as well as the various confidence scores, and feature split of
 #each of those nodes
 def convertTreeToParentChild(clf, featNames, predLabels, deciPath):
-    n_nodes,children_left,children_right,feature,threshold = obtainTreeInfo(clf)
+    n_nodes, children_left, children_right, feature, threshold = obtainTreeInfo(clf)
 
     parents = [""]
     labels = ["0: Everyone"]
@@ -167,7 +167,7 @@ def convertTreeToParentChild(clf, featNames, predLabels, deciPath):
 
             addChild(clf, i, children_right, parents, vals, labels, \
                             nodeVals, deciPath, featNames, predLabels, ">")
-            
+
     #print(parents)
     #print(labels)
     #print(vals)
@@ -176,7 +176,7 @@ def convertTreeToParentChild(clf, featNames, predLabels, deciPath):
 #variables with corresponding names seen in convertTreeToParentChild
 def addChild(clf, i, children_list, parents, vals, labels, nodeVals, deciPath,\
         featNames, predLabels, threshVal):
-    n_nodes,children_left,children_right,feature,threshold = obtainTreeInfo(clf)
+    n_nodes, children_left, children_right, feature, threshold = obtainTreeInfo(clf)
     numLive = 0
     numDead = 0
     for index, pred in enumerate(predLabels):
@@ -234,5 +234,5 @@ def convertDotData(dot_data):
             num = twoParts[0].split()[0]
             label = twoParts[1]
             nodeInfo[str(num)] = str(label)
-            
+ 
     #print(nodeInfo)

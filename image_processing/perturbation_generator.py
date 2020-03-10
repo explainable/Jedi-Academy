@@ -2,7 +2,7 @@ import numpy as np
 
 class GrayscalePerturbator:
     def __init__(self, image, sample_image=True, grid_dimen=2, stride=2, scale_factor=2, stride_scale=1, cutoff_dimen=None, is_adversarial=False):
-        try: 
+        try:
             self.original = np.array(image, copy=True, dtype="float32")
         except:
             raise Exception("Unable to convert input to NumPy array")
@@ -18,7 +18,7 @@ class GrayscalePerturbator:
             raise Exception("Expecting 2d array of pixels, but got " + str(len(shape)) + "d array")
         self.height, self.width = shape
 
-        if (sample_image):
+        if sample_image:
             flat = self.original.flatten() #since mean and var both flatten
             self.mean = np.mean(flat)
             self.variance = np.var(flat)
@@ -37,8 +37,8 @@ class GrayscalePerturbator:
         self.is_adversarial = is_adversarial
 
         if cutoff_dimen is not None:
-            assert(cutoff_dimen <= self.width)
-            assert(cutoff_dimen <= self.height)
+            assert cutoff_dimen <= self.width
+            assert cutoff_dimen <= self.height
 
     # returns a copy to avoid clients breaking internal logic
     # could return a reference while storing memory of pre-perturbed grid,
@@ -54,11 +54,11 @@ class GrayscalePerturbator:
         return perturbation
 
     def __iter__(self):
-        return self;
+        return self
 
     def __next__(self):
         pert = self.nextPerturbation()
-        if (pert is None):
+        if pert is None:
             raise StopIteration()
         return pert
 
@@ -71,20 +71,20 @@ class GrayscalePerturbator:
 
             for r, row in enumerate(mask):
                 for c, col in enumerate(mask):
-                    perturbation[posY + r][posX + c] = mask[r][c] 
+                    perturbation[posY + r][posX + c] = mask[r][c]
                     maskedIndices.append((posY + r, posX + c, self.grid_dimen))
         else:
             mask = np.random.normal(loc=self.mean, scale=self.variance, size=(self.height, self.width))
-           
+
             for r, row in enumerate(mask):
                 for c, col in enumerate(mask):
                     if c >= posX and c < posX + self.grid_dimen and r >= posY and r < posY + self.grid_dimen:
                         maskedIndices.append((r, c, self.grid_dimen))
                     else:
-                        perturbation[r][c] = 122.5 #mask[r][c] 
+                        perturbation[r][c] = 122.5 #mask[r][c]
 
         #for retrieving indices of masked pixels after calling nextPerturbation
-        self.maskedIndices = maskedIndices 
+        self.maskedIndices = maskedIndices
 
         return perturbation
 
@@ -101,11 +101,11 @@ class GrayscalePerturbator:
             self.grid_dimen *= self.scale_factor
             self.stride *= self.stride_scale
 
-            if (self.cutoff_dimen):
-                if (self.grid_dimen > self.cutoff_dimen):
+            if self.cutoff_dimen:
+                if self.grid_dimen > self.cutoff_dimen:
                     self.done = True
-            else: 
-                if (self.grid_dimen > self.width / 2 or self.grid_dimen > self.height / 2):
+            else:
+                if self.grid_dimen > self.width / 2 or self.grid_dimen > self.height / 2:
                     self.done = True
         elif xOver:
             self.maskPosition = (0, posY + stride)

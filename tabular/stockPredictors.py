@@ -3,38 +3,11 @@
 
 from tabular.models import *
 from tabular.deciViz import plotTree, convertDotData, convertTreeToParentChild, getNode
+from tabular.runPickle import readInTitanic
 import sys
 import numpy as np
 
 __dir__ = "/".join(__file__.rsplit('/')[:-1])
-#Read in titanic.csv and return a 2D list of instances, 1D list of labels, and
-#1D list of feature names
-def readInTitanic():
-    allInsts = []
-    allLabels = []
-    featNames = []
-    with open(__dir__ + "/data/titanic.csv") as titFile:
-        for linenum, line in enumerate(titFile):
-            features = line.split(",")
-            currInst = []
-            for index, feat in enumerate(features):
-                if linenum == 0:
-                    if index != 0 and index != 2:
-                        featNames.append(feat.replace('\r', '').replace('\n',''))
-                else: 
-                    if index == 0:
-                        allLabels.append(int(feat))
-                    elif index != 2:
-                        if feat == "male":
-                            currInst.append(0.0)
-                        elif feat == "female":
-                            currInst.append(1.0)
-                        else:
-                            currInst.append(float(feat))
-            if linenum != 0:
-                allInsts.append(currInst)
-
-    return allInsts, allLabels, featNames
 
 #Accept the max_depth of the tree. Create a decision tree to classify voice
 #data
@@ -42,15 +15,15 @@ def readInTitanic():
 #Return dot_data, a string describing the nodes and the edges in the resulting
 #tree
 def treeVoice(maxDepth=100):
-    voicefeat = [ [180, 15,0],     
-              [177, 42,0],
-              [136, 35,1],
-              [174, 65,0],
-              [141, 28,1]]
+    voicefeat = [[180, 15, 0],
+                 [177, 42, 0],
+                 [136, 35, 1],
+                 [174, 65, 0],
+                 [141, 28, 1]]
 
-    voiceLabel = ['man', 'woman', 'woman', 'man', 'woman']    
+    voiceLabel = ['man', 'woman', 'woman', 'man', 'woman']
 
-    data_feature_names = [ 'height', 'hair length', 'voice pitch' ]
+    data_feature_names = ['height', 'hair length', 'voice pitch']
 
     clf, dot_data, predLabels = treeClassify(voicefeat, voiceLabel, data_feature_names, maxDepth, voicefeat)
     return dot_data
@@ -75,20 +48,20 @@ def featRanges(features):
 #
 #Return the resulting weights of the model and the predicted training instances
 def linVoice():
-    voicefeat = [ [180, 15,0],     
-              [177, 42,0],
-              [136, 35,1],
-              [174, 65,0],
-              [141, 28,1]]
+    voicefeat = [[180, 15, 0],
+                 [177, 42, 0],
+                 [136, 35, 1],
+                 [174, 65, 0],
+                 [141, 28, 1]]
 
-    voiceLabel = ['man', 'woman', 'woman', 'man', 'woman']    
-    voiceLabel = [0, 1, 1, 0, 1] 
+    voiceLabel = ['man', 'woman', 'woman', 'man', 'woman']
+    voiceLabel = [0, 1, 1, 0, 1]
 
-    clf, params, predInsts = linClassify(voicefeat, voiceLabel, voicefeat)
+    clf, params, predInsts, _ = linClassify(voicefeat, voiceLabel, voicefeat)
     return params, predInsts
 
 
-#Accept the max_depth of the tree. Create a decision tree to perform a regression 
+#Accept the max_depth of the tree. Create a decision tree to perform a regression
 #on boston housing data
 #
 #Return dot_data, a string describing the nodes and the edges in the resulting
@@ -135,7 +108,7 @@ def treeTitanic(maxDepth=100):
 def linTitanic():
     features, labels, featNames = readInTitanic()
     clf, params, intercept, predLabels = linClassify(features, labels, features)
-    return params, intercept, predLabels 
+    return params, intercept, predLabels
 
 
 #self explanatory

@@ -1,16 +1,16 @@
+from sys import argv
 from mnist_cnn import *
 from perturbation_generator import *
 
 from keras.datasets import mnist
 from PIL import Image
 
-from sys import argv 
 
 sample = 0
 if len(argv) == 1:
     print("No filename provided, using default")
     filename = ""
-    
+
 else:
     filename = argv[1] + "_"
     if len(argv) > 2:
@@ -80,8 +80,3 @@ k.save(filename + "inverse_heatmap.png")
 thresholded = (scaled >= 240) * scaled
 l = Image.fromarray(thresholded, mode="L")
 l.save(filename + "thresholded.png")
-
-
-
-
-

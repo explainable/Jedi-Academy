@@ -3,6 +3,8 @@ from sklearn.datasets import load_boston
 
 __dir__ = "/".join(__file__.rsplit('/')[:-1])
 
+#Read in titanic.csv and return a 2D list of instances, 1D list of labels, and
+#1D list of feature names
 def readInTitanic():
     allInsts = []
     allLabels = []
@@ -14,8 +16,8 @@ def readInTitanic():
             for index, feat in enumerate(features):
                 if linenum == 0:
                     if index != 0 and index != 2:
-                        featNames.append(feat.replace('\r', '').replace('\n',''))
-                else: 
+                        featNames.append(feat.replace('\r', '').replace('\n', ''))
+                else:
                     if index == 0:
                         allLabels.append(int(feat))
                     elif index != 2:
@@ -34,7 +36,7 @@ def loadTitanicTree():
     loaded_clf = pickle.load(open(__dir__ + "/data/titanicTree.pkl", 'rb'))
     features, labels, featNames = readInTitanic()
     deciPath = loaded_clf.decision_path(features).toarray()
-    
+ 
     return loaded_clf, featNames, deciPath
 
 def loadBostonTree():
@@ -45,7 +47,7 @@ def loadBostonTree():
     data_feature_names = boston.feature_names
 
     deciPath = loaded_clf.decision_path(features).toarray()
-    
+ 
     return loaded_clf, data_feature_names, deciPath
 
 
